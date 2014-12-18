@@ -1,0 +1,14 @@
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+0123456789
+
+F -> E
+V -> X,Y
+I -> B,D,E,F,H,K,L,M,N,P,R,T,1,4
+B -> 8
+S -> 5
+
+Segmenteren op gele achtergrondkleur van de 
+kentekenplaten. Labelen om eventueel meerdere
+kentekenplaten als aparte objecten te kunnen
+herkennen. Vermenigvuldig met label 1,2,...,n
+om 1 plaat per keer te kunnen processen.
