@@ -1,4 +1,4 @@
-% The order of the image is: A t/m Z 0 t/m 9 and -
+% The order of the characters in the image is: A t/m Z 0 t/m 9 and -
 dictionary = imread('characters_33x33.png');
 character = 1;
 min = 1 + (character - 1) * 33;
