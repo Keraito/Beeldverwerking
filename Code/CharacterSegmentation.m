@@ -35,29 +35,32 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  
  % The order of the characters in the image is: A t/m Z 0 t/m 9 and -
  reference = imread('characters_33x33.png');
+ bReference = reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
+ bReference = bReference > 0; % Make a binary image of the reference.
  dictionary = ['A':'Z' '0':'9' '-'];
  char = 1:33:1221; % there are 37 characters of 33px wide, hence 37*33 = 1221 is the maximum
  n = data(:,1); % The order in which the labels should be viewed
  %correlations = zeros(length(n));
- % NOTE: please remove for-loops!!!!! Otherwise for the actual program an
- % additional for loop is needed at the correlation part, because this is
- % just for 1 match.
- for i = 1:1%:length(n)
-     xRange = data(i,2):data(i,3);
-     yRange = data(i,4):data(i,5);
+ % NOTE: please remove for-loops!!!!!
+ licensePlate = '';
+ for i = 1:length(n)
+     xRange = data(i,2)-1:data(i,3)+1;
+     yRange = data(i,4)-1:data(i,5)+1;
      sample = uint8(~f); % ~f because the character should be black, background white as is our reference
      scaledSample = imresize(sample(yRange,xRange), [33 33]);
      %NOTE: should not forget to make a binary image of reference!!!! now
      %only 1 of 3 color channels is used!!!
      z = 1;
      for j = char    
-     correlations(z) = corr2(scaledSample, reference(1:33,j:j+32));
+     correlations(z) = corr2(scaledSample, bReference(1:33,j:j+32));
      z = z+1;
      end
      [max_value, index] = max(correlations);
+     licensePlate = strcat(licensePlate, dictionary(index));
      % Unfortunately the following line won't work:
      %correlations = corr2(scaledSample, reference(1:33,char:char+32));
  end
+ licensePlate
  %character = 1;
  %min = 1 + (character - 1) * 33;
  %xRange = [min:1:min+32];
