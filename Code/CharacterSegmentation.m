@@ -38,11 +38,18 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  dictionary = ['A':'Z' '0':'9' '-'];
  char = 1:33:1221; % there are 37 characters of 33px wide, hence 37*33 = 1221 is the maximum
  n = data(:,1); % The order in which the labels should be viewed
- correlations = zeros(length(n));
- for i = 1:length(n)
+ %correlations = zeros(length(n));
+ for i = 1:1%:length(n)
      xRange = data(i,2):data(i,3);
      yRange = data(i,4):data(i,5);
-     correlations(i) = corr2(f(yRange,xRange), reference(1:33, 1:33));
+     sample = uint8(f);
+     scaledSample = imresize(sample(yRange,xRange), [33 33]);
+     z = 1;
+     for j = char    
+     correlations(z) = corr2(~scaledSample, reference(1:33,j:j+32));
+     z = z+1;
+     end
+     [max_value, index] = max(correlations);
  end
  %character = 1;
  %min = 1 + (character - 1) * 33;
