@@ -1,3 +1,5 @@
+% NOTE: Be sure to load Trainingsvideo and characters_33x33.png in
+% workspace
 % License plate acquisition
 vid = VideoReader('Trainingsvideo.avi');
 frame = read(vid,100);
@@ -18,18 +20,52 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  % the color channels can be dropped as well. NOTE: Be sure d is mxnx1
  % matrix and not mxnx3. Labeling will fail otherwise.
  d = smooth(:,:,0) < 80 & smooth(:,:,1) < 80 & smooth(:,:,2) < 80; 
- e = closing(~d,15,'elliptic');
+ e = closing(~d,15,'elliptic'); 
  f = e & d; % this results in the characters as foreground objects.
  g = label(f);
  
  % Character matching
+ % Measure min and max coordinates of the labeled objects.
+ msr = measure(g,[],{'Minimum','Maximum'},[],Inf,0,0);
+ % data layout: [ labelID  minimumX  maximumX  minimumY maximumY ]
+ data = [ [msr.ID]' [msr.Minimum(1,:)]' [msr.Maximum(1,:)]' [msr.Minimum(2,:)]' [msr.Maximum(2,:)]' ];
+ % Sort the matrix by ascending minimum X value, because we read the 
+ % license plates from left to right.
+ data = sortrows(data, 2); 
+ 
  % The order of the characters in the image is: A t/m Z 0 t/m 9 and -
- dictionary = imread('characters_33x33.png');
- character = 1;
- min = 1 + (character - 1) * 33;
- xRange = [min:1:min+32];
- yRange = [1:1:33];
- image(dictionary(yRange,xRange));
+ reference = imread('characters_33x33.png');
+ bReference = reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
+ bReference = bReference > 0; % Make a binary image of the reference.
+ dictionary = ['A':'Z' '0':'9' '-'];
+ char = 1:33:1221; % there are 37 characters of 33px wide, hence 37*33 = 1221 is the maximum
+ n = data(:,1); % The order in which the labels should be viewed
+ %correlations = zeros(length(n));
+ % NOTE: please remove for-loops!!!!!
+ licensePlate = '';
+ for i = 1:length(n)
+     xRange = data(i,2)-1:data(i,3)+1;
+     yRange = data(i,4)-1:data(i,5)+1;
+     sample = uint8(~f); % ~f because the character should be black, background white as is our reference
+     scaledSample = imresize(sample(yRange,xRange), [33 33]);
+     %NOTE: should not forget to make a binary image of reference!!!! now
+     %only 1 of 3 color channels is used!!!
+     z = 1;
+     for j = char    
+     correlations(z) = corr2(scaledSample, bReference(1:33,j:j+32));
+     z = z+1;
+     end
+     [max_value, index] = max(correlations);
+     licensePlate = strcat(licensePlate, dictionary(index));
+     % Unfortunately the following line won't work:
+     %correlations = corr2(scaledSample, reference(1:33,char:char+32));
+ end
+ licensePlate
+ %character = 1;
+ %min = 1 + (character - 1) * 33;
+ %xRange = [min:1:min+32];
+ %yRange = [1:1:33];
+ %image(reference(yRange,xRange));
  % match segmented objects with the dictionary. 
  % use the correlation coefficient to determine the closest match between
  % object and character.
