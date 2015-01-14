@@ -7,11 +7,7 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  a = dip_image((bgeheel<(160/180)*ggeheel - 20));
  b = label(a,Inf,1400,0);
  c = closing(b,8,'elliptic');
- msr = measure(c,[],{'Minimum','Maximum'},1,Inf,0,0);
  result = uint8(frame*c);
- %result = result(msr.Minimum(2):msr.Maximum(2), msr.Minimum(1):msr.Maximum(1), :);
- %figure;image(result);
- %result = rgb2gray(result);
  
  % Character segmentation
  licensePlate = result;
@@ -24,7 +20,7 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  %d = smooth(:,:) < 80;
  e = closing(~d,15,'elliptic'); 
  f = e & d; % this results in the characters as foreground objects.
- g = label(f);
+ g = label(f,Inf,10,0);
  
  % Character matching
  % Measure min and max coordinates of the labeled objects.
@@ -36,46 +32,27 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  data = sortrows(data, 2); 
  
  % The order of the characters in the image is: A t/m Z 0 t/m 9 and -
- reference = imread('characters_33x33.png');
- bReference = rgb2gray(reference); %reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
- bReference = bReference > 0; % Make a binary image of the reference.
- dictionary = ['A':'Z' '0':'9' '-'];
- char = 1:33:1221; % there are 37 characters of 33px wide, hence 37*33 = 1221 is the maximum
+ reference = imread('Reference.png');
+ % begin x (note data in dip starts 0,0 matrix starts 1,1 so +1)
+ lookup = [1 22 42 65 84 106 128 145 167 186 214 236 257 279 300 321 344 367 391 414 434 457 467 487 507 529 551 572 592 614 636];
+ %bReference = rgb2gray(reference); %reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
+ dictionary = ['B' 'C' 'D' 'F' 'G' 'H' 'J' 'K' 'L' 'M' 'N' 'P' 'R' 'S' 'T' 'V' 'W' 'X' 'Y' 'Z' '0':'9'];
  n = data(:,1); % The order in which the labels should be viewed
- %correlations = zeros(length(n));
  % NOTE: please remove for-loops!!!!!
  sample = uint8(~f); % ~f because the character should be black, background white as is our reference
  licensePlate = '';
  for i = 1:length(n)
-     xRange = data(i,2)-1:data(i,3)+1;
-     yRange = data(i,4)-1:data(i,5)+1;
-     scaledSample = imresize(sample(yRange,xRange), [33 33]);
-     %NOTE: should not forget to make a binary image of reference!!!! now
-     %only 1 of 3 color channels is used!!!
-     z = 1;
-     for j = char    
-     correlations(z) = corr2(scaledSample, bReference(1:33,j:j+32));
-     z = z+1;
+     xRange = (data(i,2):data(i,3)) +1;
+     yRange = (data(i,4):data(i,5)) +1;
+     for j = 1:length(dictionary)
+        refChar = rgb2gray(reference(1:33,lookup(j):lookup(j+1)-1,:));
+        scaledSample = imresize(sample(yRange,xRange,:), size(refChar));
+        correlations(j) = corr2(scaledSample, refChar);
      end
+     correlations
      [max_value, index] = max(correlations);
      licensePlate = strcat(licensePlate, dictionary(index));
      % Unfortunately the following line won't work:
      %correlations = corr2(scaledSample, reference(1:33,char:char+32));
  end
  licensePlate
- %character = 1;
- %min = 1 + (character - 1) * 33;
- %xRange = [min:1:min+32];
- %yRange = [1:1:33];
- %image(reference(yRange,xRange));
- % match segmented objects with the dictionary. 
- % use the correlation coefficient to determine the closest match between
- % object and character.
-
- 
- % OLD SNIPPETS
- %sharp = smooth - (2 * laplace(smooth)); % to accentuate te difference between characters and background
- %binaryNumberPlate = sharp > 5 & sharp < 100 % create a binary image which shows the characters
- %seed = erosion(binaryNumberPlate,5,'elliptic');
- %mask = binaryNumberPlate;
- %characters = bpropagation(seed,binaryNumberPlate,Inf,1,0)
