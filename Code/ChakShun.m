@@ -1,5 +1,5 @@
 vid = VideoReader('C:\Users\ChakShun\Uni\[2014-2015]Q2\Beeldverwerking\Eindproject\Beeldverwerking\Resources\Trainingsvideo.avi');
-frame = read(vid,800);
+frame = read(vid,100);
 image(frame);
 rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 
@@ -14,7 +14,7 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 %figure, hold on, scatter(bgeheel(:),rgeheel(:)), 
  %   scatter(blue(:),red(:),'red'); xlabel('Blauw'); ylabel('Red');
 
-    a = dip_image((bgeheel<(160/180)*ggeheel - 20));
+    a = dip_image((bgeheel<(160/180)*ggeheel - 20)& rgeheel<150);
  %a = dip_image( rgeheel<250 & bgeheel<55 & ggeheel<120 &(rgeheel<(200/300)*bgeheel+200) & (rgeheel>(300/250)*bgeheel) & (ggeheel<(350-40)/400 * rgeheel+40) & (bgeheel<(300/250)*ggeheel+25)& (bgeheel<(160/180)*ggeheel - 20) );
     b = label(a,Inf,1400,0);
     c = closing(b,8,'elliptic');

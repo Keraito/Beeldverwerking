@@ -2,7 +2,7 @@ function licensePlate( frame )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
     rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
-    a = dip_image((bgeheel<(160/180)*ggeheel - 20)& rgeheel<150);
+    a = dip_image((bgeheel<(160/180)*ggeheel - 20)& );
  %a = dip_image( rgeheel<250 & bgeheel<55 & ggeheel<120 &(rgeheel<(200/300)*bgeheel+200) & (rgeheel>(300/250)*bgeheel) & (ggeheel<(350-40)/400 * rgeheel+40) & (bgeheel<(300/250)*ggeheel+25)& (bgeheel<(160/180)*ggeheel - 20) );
     b = label(a,Inf,1400,0);
     c = closing(b,8,'elliptic');
