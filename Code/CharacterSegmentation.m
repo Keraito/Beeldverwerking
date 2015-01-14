@@ -11,6 +11,7 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  result = uint8(frame*c);
  %result = result(msr.Minimum(2):msr.Maximum(2), msr.Minimum(1):msr.Maximum(1), :);
  %figure;image(result);
+ %result = rgb2gray(result);
  
  % Character segmentation
  licensePlate = result;
@@ -20,6 +21,7 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  % the color channels can be dropped as well. NOTE: Be sure d is mxnx1
  % matrix and not mxnx3. Labeling will fail otherwise.
  d = smooth(:,:,0) < 80 & smooth(:,:,1) < 80 & smooth(:,:,2) < 80; 
+ %d = smooth(:,:) < 80;
  e = closing(~d,15,'elliptic'); 
  f = e & d; % this results in the characters as foreground objects.
  g = label(f);
@@ -35,18 +37,18 @@ rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
  
  % The order of the characters in the image is: A t/m Z 0 t/m 9 and -
  reference = imread('characters_33x33.png');
- bReference = reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
+ bReference = rgb2gray(reference); %reference(:,:,1) + reference(:,:,2) + reference(:,:,3);
  bReference = bReference > 0; % Make a binary image of the reference.
  dictionary = ['A':'Z' '0':'9' '-'];
  char = 1:33:1221; % there are 37 characters of 33px wide, hence 37*33 = 1221 is the maximum
  n = data(:,1); % The order in which the labels should be viewed
  %correlations = zeros(length(n));
  % NOTE: please remove for-loops!!!!!
+ sample = uint8(~f); % ~f because the character should be black, background white as is our reference
  licensePlate = '';
  for i = 1:length(n)
      xRange = data(i,2)-1:data(i,3)+1;
      yRange = data(i,4)-1:data(i,5)+1;
-     sample = uint8(~f); % ~f because the character should be black, background white as is our reference
      scaledSample = imresize(sample(yRange,xRange), [33 33]);
      %NOTE: should not forget to make a binary image of reference!!!! now
      %only 1 of 3 color channels is used!!!
