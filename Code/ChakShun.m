@@ -1,7 +1,7 @@
 vid = VideoReader('C:\Users\ChakShun\Uni\[2014-2015]Q2\Beeldverwerking\Eindproject\Beeldverwerking\Resources\Trainingsvideo.avi');
-frame = read(vid,1600);
+frame = read(vid,800);
 image(frame);
-   rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
+rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 
 % Kentekenplaat eruit halen.
 %plaat = frame(250:280,335:465,:); 
@@ -25,6 +25,6 @@ image(frame);
     %figure;image(result);
     image(result);
 
-%F = rgb2hsv(frame);
-%H = F(:,:,1); S = F(:,:,2); V = F(:,:,3);
-%a = dip_image((S>(1/0.3)*H) &H>0.08& H<0.15 & V>0.15 &V<0.55 & (V>-0.3*S+0.4) & S > 0.42);
+% F = rgb2hsv(frame);
+% H = F(:,:,1); S = F(:,:,2); V = F(:,:,3);
+% a = dip_image((S>(1/0.3)*H) &H>0.08& H<0.15 & V>0.15 &V<0.55 & (V>-0.3*S+0.4) & S > 0.42);
