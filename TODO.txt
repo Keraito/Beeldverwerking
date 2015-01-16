@@ -1,0 +1,10 @@
+- HSV kentekenplaat filteren
+- Correlation coefficient:
+	- Rechthoekige characters
+	- Uitzoeken welke characters voor kunnen komen
+- Verbeteren Character segmentatie (contrast/edges wat dan ook)
+- GUI fixen:
+	- timestamps
+	- vullen van de lijst
+- Zelfcontrole blackboard:
+	- checkSolution
