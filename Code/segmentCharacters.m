@@ -11,6 +11,8 @@ function [ result ] = segmentCharacters( image )
     result = abs(bsxfun(@minus, data(:,2:4), med));
     result = (sum(result') / 3)';
     [s i] = sort(max(result,[],2));
+    
+    if(length(i) == 6)
     needed_labels = i(1:6); % because only 6 characters on numberplate
     regions = uint8(lbl & 0);
     for j = needed_labels'
@@ -18,4 +20,7 @@ function [ result ] = segmentCharacters( image )
        regions = regions + j*(lbl == j);
     end
     result = uint8(regions);
+    else
+        result = 0;
+    end;
 end
