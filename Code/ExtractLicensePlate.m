@@ -21,13 +21,14 @@ e = label(d,Inf,500,0);
          e = e - k * (e==k);
     end;
     end;
+
 if(max(e) > 0)
     e = closing(e,15,'rectangular');
 
     msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
-
+    e = e==2;
     e = uint8(frame) * (e/e);
-    e = frame(msr2.Minimum(2):msr2.Maximum(2), msr2.Minimum(1):msr2.Maximum(1), : );
+    e = frame((msr2.Minimum(2)+1):(msr2.Maximum(2)+1), (msr2.Minimum(1)+1):(msr2.Maximum(1)+1), : );
     image(e)
 else
     e = 0;

@@ -1,7 +1,7 @@
 function [ kenteken ] = run( frame )
 plate = ExtractLicensePlate(frame);
 if length(plate)>1
-    chars = segmentCharacters(plate);
+re    chars = segmentCharacters(plate);
     if length(chars)>1
          reference = imread('Characters/Reference.png');
          % begin x (note data in dip starts 0,0 matrix starts 1,1 so +1)
