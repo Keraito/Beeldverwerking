@@ -1,4 +1,4 @@
-function [ e ] = ExtractLicensePlate( frame )
+function [ e,msr2 ] = ExtractLicensePlate( frame )
 % Split in RGB channels.
 rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 F = rgb2hsv(frame);
@@ -21,15 +21,12 @@ e = label(d,Inf,500,0);
          e = e - k * (e==k);
     end;
     end;
-
 if(max(e) > 0)
     e = closing(e,15,'rectangular');
 
     msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
-    e = e==2;
-    e = uint8(frame) * (e/e);
+    %e = e==2;
     e = frame((msr2.Minimum(2)+1):(msr2.Maximum(2)+1), (msr2.Minimum(1)+1):(msr2.Maximum(1)+1), : );
-    image(e)
 else
     e = 0;
 end
