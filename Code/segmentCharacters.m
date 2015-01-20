@@ -3,10 +3,8 @@ function [ result ] = segmentCharacters( image )
     %sharp = uint8(image - (2*laplace(image))); % Sharpen edges
     r = laplace(rgb2gray(smooth)); % find edges
     b = r > 2; % threshold on edges
-    dip_image(r)
-    dip_image(b)
     cl = opening(b, 2, 'elliptic'); % remove noise
-    cl = closing(cl,4 ,'elliptic'); % close the gaps
+    %cl = closing(cl,4,'elliptic'); % close the gaps
     lbl = label(cl,Inf,50,0);
     lbl
     msr = measure(lbl,[],{'Size','CartesianBox'},[],Inf,0,0);
@@ -25,7 +23,6 @@ function [ result ] = segmentCharacters( image )
        regions = regions + j*(lbl == j);
     end
     result = uint8(regions);
-    dip_image(result)
     else
         result = 0;
     end;

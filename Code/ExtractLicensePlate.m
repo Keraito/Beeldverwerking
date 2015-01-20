@@ -14,7 +14,6 @@ b = bclosing(a,5,-1,1);
 c = bopening(b,2,1,0);
 d = bclosing(c,5,-1,1);
 e = label(d,Inf,500,0);
-
     msr = measure(e,[],{'CartesianBox'},[],Inf,0,0);
     for k = 1:1:length(msr)
     division = msr.CartesianBox(k*2-1)/(msr.CartesianBox(k*2));
@@ -27,8 +26,8 @@ if(max(e) > 0)
 
     msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
 
-    e = uint8(frame) * (e/e);
-    e = e(msr2.Minimum(1):msr2.Maximum(1), msr2.Minimum(2):msr2.Maximum(2), : );
+    %e = uint8(frame) * (e/e);
+    e = frame(msr2.Minimum(2)+1:msr2.Maximum(2)+1, msr2.Minimum(1)+1:msr2.Maximum(1)+1, : );
 else
     e = 0;
 end

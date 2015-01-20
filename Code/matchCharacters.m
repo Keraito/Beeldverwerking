@@ -20,6 +20,7 @@ function [ characters ] = matchCharacters( labels, reference, lookup, dictionary
            scaledSample = imresize(sample(yRange,xRange,:), size(refChar));
            correlations(j) = corr2(scaledSample, refChar);
         end
+        dip_image(imresize(sample(yRange,xRange,:), size(refChar)))
         [~, index] = max(correlations);
         characters = strcat(characters, dictionary(index));
     end
