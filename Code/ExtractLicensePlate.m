@@ -27,7 +27,8 @@ if(max(e) > 0)
     msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
 
     e = uint8(frame) * (e/e);
-    e = e(msr2.Minimum(1):msr2.Maximum(1), msr2.Minimum(2):msr2.Maximum(2), : );
+    e = frame(msr2.Minimum(2):msr2.Maximum(2), msr2.Minimum(1):msr2.Maximum(1), : );
+    image(e)
 else
     e = 0;
 end

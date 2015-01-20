@@ -1,0 +1,24 @@
+function [ a,b,c ] = Streepjes( kenteken )
+a=0;
+b=0;
+c=0;
+% Kenteken van de vormen: 99XXX9 en XX999X.
+pattern25 = '([A-Z]{2})(\d{3})([A-Z]{1})|(\d{2})([A-Z]{3})(\d{1})';
+regexprep(a,pattern25,'$1-$2-$3');
+pattern14 = '([A-Z]{1})(\d{3})([A-Z]{2})|(\d{1})([A-Z]{3})(\d{2})';
+
+
+
+if(regexpi(kenteken,pattern25)==1)
+    %insert streepjes na 2 en 5
+    a = 1;
+elseif(regexpi(kenteken,pattern14)==1)
+    %insert streepjes na 1 en 4
+    b = 1;
+else
+    %insert streepjes na 2 en 4
+    c= 1;
+end
+
+end
+

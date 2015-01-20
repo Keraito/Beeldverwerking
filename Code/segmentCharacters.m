@@ -12,7 +12,7 @@ function [ result ] = segmentCharacters( image )
     result = (sum(result') / 3)';
     [s i] = sort(max(result,[],2));
     
-    if(length(i) == 6)
+    if(length(i) >= 6)
     needed_labels = i(1:6); % because only 6 characters on numberplate
     regions = uint8(lbl & 0);
     for j = needed_labels'
