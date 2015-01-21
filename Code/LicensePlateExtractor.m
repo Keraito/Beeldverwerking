@@ -22,7 +22,7 @@ function varargout = LicensePlateExtractor(varargin)
 
 % Edit the above text to modify the response to help LicensePlateExtractor
 
-% Last Modified by GUIDE v2.5 17-Dec-2014 12:12:09
+% Last Modified by GUIDE v2.5 20-Jan-2015 22:45:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -90,6 +90,7 @@ set(handles.fileLabel,'String',FILENAME);
 image(read(handles.video,1));
 % Remove axis and ticks from all axes
 set(gca,'xtick',[],'ytick',[]);
+set(handles.uitable1,'Data',{});
 updateCurrentFrame(hObject, handles,1);
 % Update handles structure
 guidata(hObject, handles);
@@ -123,17 +124,33 @@ function processToggle_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 % Update toggle button text
 updateToggleButton(hObject, handles, get(handles.processToggle, 'Value'));
-
+tic;
+results = get(handles.uitable1,'Data');
 h = get(handles.previewWindow,'Children');
 i = handles.currentFrame;
 while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     frame = read(handles.video, i);
     set(h,'CData', frame);
     updateCurrentFrame(hObject, handles,i);
+    kenteken = run(frame);
+    if length(kenteken)>1
+        index = length(results)+1;
+        results{index,1} = kenteken;
+        results{index,2} = i;
+        time = toc;
+        results{index,3} = time; 
+        set(handles.uitable1,'Data',results);
+    end
+    updateProcessingTime(hObject, handles);
     i = i + 1;
 end
 % Hint: get(hObject,'Value') returns toggle state of processToggle
 
+function updateProcessingTime(hObject, handles)
+time = sprintf('%d%s',toc,'ms');
+set(handles.timeLabel,'String',time);
+% Update handles structure
+guidata(hObject, handles);
 
 % --- Executes on button press in resetButton.
 function resetButton_Callback(hObject, eventdata, handles)
