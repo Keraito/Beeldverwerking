@@ -21,6 +21,8 @@ e = label(d,Inf,500,0);
          e = e - k * (e==k);
     end;
     end;
+f = e/e;
+angle = regionprops(uint8(f), 'Orientation');
 if(max(e) > 0)
     e = closing(e,15,'rectangular');
 
@@ -28,6 +30,7 @@ if(max(e) > 0)
 
     %e = uint8(frame) * (e/e);
     e = frame(msr2.Minimum(2)+1:msr2.Maximum(2)+1, msr2.Minimum(1)+1:msr2.Maximum(1)+1, : );
+    e = imrotate(e,-angle.Orientation,'bilinear','crop');
 else
     e = 0;
 end

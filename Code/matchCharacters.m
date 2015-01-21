@@ -1,6 +1,6 @@
 function [ characters ] = matchCharacters( labels, reference, lookup, dictionary )
     % Measure min and max coordinates of the labeled objects.
-    msr = measure(labels,[],{'Minimum','Maximum'},[],Inf,0,0);
+    msr = measure(uint8(labels),[],{'Minimum','Maximum'},[],Inf,0,0);
     % data layout: [ labelID  minimumX  maximumX  minimumY maximumY ]
     data = [ [msr.ID]' [msr.Minimum(1,:)]' [msr.Maximum(1,:)]' [msr.Minimum(2,:)]' [msr.Maximum(2,:)]' ];
     % Sort the matrix by ascending minimum X value, because we read the 
@@ -20,7 +20,6 @@ function [ characters ] = matchCharacters( labels, reference, lookup, dictionary
            scaledSample = imresize(sample(yRange,xRange,:), size(refChar));
            correlations(j) = corr2(scaledSample, refChar);
         end
-        dip_image(imresize(sample(yRange,xRange,:), size(refChar)))
         [~, index] = max(correlations);
         characters = strcat(characters, dictionary(index));
     end

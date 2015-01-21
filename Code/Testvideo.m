@@ -1,7 +1,8 @@
 vid = VideoReader('Trainingsvideo.avi');
 p = 1;
 %73,74
-for(k = 796)
+%796
+for(k = 700)
 frame=read(vid,k);
 kenteken = run(frame);
 if length(kenteken)>1
