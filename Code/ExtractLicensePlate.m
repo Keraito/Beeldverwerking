@@ -12,7 +12,7 @@ a = dip_image(H<0.112 & S >0.14 & (bgeheel<(160/180)*ggeheel-25));
 % First apply closing to fill up broken pieces of the license plate
 b = bclosing(a,5,-1,1);
 c = bopening(b,2,1,0);
-d = bclosing(c,5,-1,1);
+d = bclosing(c,5,-1,1); 
 e = label(d,Inf,500,0);
     msr = measure(e,[],{'CartesianBox'},[],Inf,0,0);
     for k = 1:1:length(msr)

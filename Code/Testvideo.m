@@ -1,7 +1,6 @@
 p = 1;
 %73,74
-tic;
-for(k = 1:2:100)
+for(k = 700)
 frame=read(vid,k);
 kenteken = run(frame);
 if length(kenteken)>1
