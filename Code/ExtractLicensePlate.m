@@ -1,4 +1,4 @@
-function [ g ] = ExtractLicensePlate( frame )
+function [ e ] = ExtractLicensePlate( frame )
 % Split in RGB channels.
 rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 F = rgb2hsv(frame);
@@ -28,7 +28,7 @@ if(max(e) > 0)
      msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
      %e = e==2;
      e = frame((msr2.Minimum(2)+1):(msr2.Maximum(2)+1), (msr2.Minimum(1)+1):(msr2.Maximum(1)+1), : );
-    g = imrotate(e,-angle.Orientation,'bilinear','crop');
+    e = imrotate(e,-angle.Orientation,'bilinear','crop');
 else
     e = 0;
 end
