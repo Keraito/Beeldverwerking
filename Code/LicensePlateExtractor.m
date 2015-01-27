@@ -22,7 +22,7 @@ function varargout = LicensePlateExtractor(varargin)
 
 % Edit the above text to modify the response to help LicensePlateExtractor
 
-% Last Modified by GUIDE v2.5 20-Jan-2015 22:45:46
+% Last Modified by GUIDE v2.5 21-Jan-2015 12:25:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -134,20 +134,22 @@ while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     updateCurrentFrame(hObject, handles,i);
     kenteken = run(frame);
     if length(kenteken)>1
-        index = length(results)+1;
+        index = size(results,1)+1;
         results{index,1} = kenteken;
         results{index,2} = i;
         time = toc;
         results{index,3} = time; 
         set(handles.uitable1,'Data',results);
+        updateProcessingTime(hObject, handles);
     end
-    updateProcessingTime(hObject, handles);
-    i = i + 1;
+    i = i + 4;
 end
+solutionFile = 'beoordelingSolutions.mat';
+checkSolution(results, solutionFile);
 % Hint: get(hObject,'Value') returns toggle state of processToggle
 
 function updateProcessingTime(hObject, handles)
-time = sprintf('%d%s',toc,'ms');
+time = sprintf('%0.2f%s',toc,'s');
 set(handles.timeLabel,'String',time);
 % Update handles structure
 guidata(hObject, handles);
@@ -160,6 +162,7 @@ function resetButton_Callback(hObject, eventdata, handles)
 updateToggleButton(hObject, handles, 0);
 updateCurrentFrame(hObject, handles, 1);
 image(read(handles.video,1));
+set(handles.uitable1,'Data',[]);
 % Update handles structure
 guidata(hObject, handles);
 % NOTE: DO NOT FORGET TO CLEAR THE TABLE WHEN FILLED!!!!
