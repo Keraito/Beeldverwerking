@@ -128,24 +128,64 @@ tic;
 results = get(handles.uitable1,'Data');
 h = get(handles.previewWindow,'Children');
 i = handles.currentFrame;
+garbage = '******';
+temp = garbage;
+sampleList = cell(1,30);
+data = cell(30,3);
+sampleListIndex = 1;
 while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     frame = read(handles.video, i);
-    set(h,'CData', frame);
-    updateCurrentFrame(hObject, handles,i);
+
     kenteken = run(frame);
     if length(kenteken)>1
-        index = size(results,1)+1;
-        results{index,1} = kenteken;
-        results{index,2} = i;
-        time = toc;
-        results{index,3} = time; 
-        set(handles.uitable1,'Data',results);
-        updateProcessingTime(hObject, handles);
+        characters = strrep(kenteken,'-','');
+        if sum(characters == temp) > 2 | temp == garbage
+            sampleList{sampleListIndex} = characters;
+            time = toc;
+            data(sampleListIndex,:) = {kenteken i time};
+            updateProcessingTime(hObject, handles);
+            
+            sampleListIndex = sampleListIndex + 1;
+            temp = characters;
+        else
+            [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
+            occurances = histc(X, 1:numel(uniqueSamples));
+            [~,I] = max(occurances);
+            I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+            sampleListIndex = 1;
+            temp = garbage;
+            
+            index = size(results,1)+1;
+            results{index,1} = data{I,1};
+            results{index,2} = data{I,2};
+            results{index,3} = data{I,3}; 
+            set(handles.uitable1,'Data',results); 
+        end
     end
     i = i + 4;
+    set(h,'CData', frame);
+    updateCurrentFrame(hObject, handles,i);
 end
+% Laatste kentekenplaat is nog niet opgenomen.
+if length(sampleList(1:sampleListIndex-1)) > 1
+    [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
+    occurances = histc(X, 1:numel(uniqueSamples));
+    [~,I] = max(occurances);
+    I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+    sampleListIndex = 1;
+    temp = garbage;
+            
+    index = size(results,1)+1;
+    results{index,1} = data{I,1};
+    results{index,2} = data{I,2};
+    results{index,3} = data{I,3};
+    set(handles.uitable1,'Data',results); 
+end
+
 solutionFile = 'beoordelingSolutions.mat';
+%solutionFile = 'trainingSolutions.mat';
 checkSolution(results, solutionFile);
+updateToggleButton(hObject, handles, ~get(handles.processToggle, 'Value'));
 % Hint: get(hObject,'Value') returns toggle state of processToggle
 
 function updateProcessingTime(hObject, handles)
