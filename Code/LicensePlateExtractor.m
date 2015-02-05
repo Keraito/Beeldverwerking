@@ -135,7 +135,6 @@ data = cell(30,3);
 sampleListIndex = 1;
 while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     frame = read(handles.video, i);
-
     kenteken = run(frame);
     if length(kenteken)>1
         characters = strrep(kenteken,'-','');
@@ -152,14 +151,21 @@ while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
             occurances = histc(X, 1:numel(uniqueSamples));
             [~,I] = max(occurances);
             I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+            if size(results,1) == 0
+                index = size(results,1)+1;
+                results{index,1} = data{I,1};
+                results{index,2} = data{I,2};
+                results{index,3} = data{I,3}; 
+                set(handles.uitable1,'Data',results); 
+            elseif ~ismember(data{I,1}, results(:,1))
+                index = size(results,1)+1;
+                results{index,1} = data{I,1};
+                results{index,2} = data{I,2};
+                results{index,3} = data{I,3}; 
+                set(handles.uitable1,'Data',results);
+            end
             sampleListIndex = 1;
             temp = garbage;
-            
-            index = size(results,1)+1;
-            results{index,1} = data{I,1};
-            results{index,2} = data{I,2};
-            results{index,3} = data{I,3}; 
-            set(handles.uitable1,'Data',results); 
         end
     end
     i = i + 4;
