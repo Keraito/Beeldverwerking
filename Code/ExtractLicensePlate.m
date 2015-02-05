@@ -1,4 +1,4 @@
-function [ e ] = ExtractLicensePlate( frame )
+function [ lplate ] = ExtractLicensePlate( frame )
 % Split in RGB channels.
 rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);
 F = rgb2hsv(frame);
@@ -21,16 +21,22 @@ e = label(d,Inf,500,0);
          e = e - k * (e==k);
     end;
     end;
-f = e/e;
-angle = regionprops(uint8(f),'Orientation');
-if(max(e) > 0)
-    e = closing(e,15,'rectangular');
-     msr2 = measure(uint8(e),[],{'Minimum','Maximum'},[],Inf,0,0);
-     %e = e==2;
-     e = frame((msr2.Minimum(2)+1):(msr2.Maximum(2)+1), (msr2.Minimum(1)+1):(msr2.Maximum(1)+1), : );
-    e = imrotate(e,-angle.Orientation,'bilinear','crop');
+labels = unique(uint8(e));
+
+
+if( max(labels) > 0)
+    for( index = 2:length(labels))
+        f = e == labels(index);
+        angle = regionprops(uint8(f),'Orientation');
+
+        g = closing(f,15,'rectangular');
+        msr2 = measure(uint8(g),[],{'Minimum','Maximum'},[],Inf,0,0);
+        %e = e==2;
+        cut = frame((msr2.Minimum(2)+1):(msr2.Maximum(2)+1), (msr2.Minimum(1)+1):(msr2.Maximum(1)+1), : );
+        lplate{index-1} = imrotate(cut,-angle.Orientation,'bilinear','crop');
+    end
 else
-    e = 0;
-end
+    lplate{1} = 0;
 end
 
+end

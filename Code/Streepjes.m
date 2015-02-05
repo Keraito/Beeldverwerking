@@ -8,7 +8,7 @@ kenteken = regexprep(kenteken,pattern14,'$1-$2-$3');
 
 pattern24 = '([A-Z]{2}|\d{2})([A-Z]{2}|\d{2})([A-Z]{2}|\d{2})';
 if(length(kenteken)==6)
-    if( regexpi(kenteken,pattern24)==1)
+    if(regexpi(kenteken, pattern24) == 1)
         kenteken = sprintf('%s-%s-%s', kenteken(1:2),kenteken(3:4),kenteken(5:6));
     else
         kenteken = 0;
@@ -28,4 +28,3 @@ end
 % end
 % 
 % end
-
