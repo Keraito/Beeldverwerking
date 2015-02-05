@@ -3,8 +3,9 @@
 p = 1;
 %73,74
 tic;
-for(k = 1:100:1901)%1:4:vid.NumberofFrames)
+for(k = 1600:2:1700)%1:4:vid.NumberofFrames)
 frame=read(vid,k);
+image(frame);
 kentekenarray = run(frame);
 %if length(kenteken)>1
 for(n = 1:length(kentekenarray))
