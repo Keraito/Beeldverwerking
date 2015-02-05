@@ -19,6 +19,6 @@ if length(plate{1})>1
         
     end
 else
-    kenteken(1) = 0;
+    kenteken{1} = 0;
 end
 end
