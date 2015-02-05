@@ -1,6 +1,6 @@
 function [ kenteken ] = run( frame )
 plate = ExtractLicensePlate(frame);
-%if length(plate{1})>1
+if length(plate{1})>1
     for(k = 1:length(plate))
         chars = segmentCharacters(plate{k});
         
@@ -11,13 +11,13 @@ plate = ExtractLicensePlate(frame);
             dictionary = ['B' 'C' 'D' 'F' 'G' 'H' 'J' 'K' 'L' 'M' 'N' 'P' 'R' 'S' 'T' 'V' 'W' 'X' 'Y' 'Z' '0':'9'];
             nummerbord = matchCharacters(chars, reference, lookup, dictionary);
 
-            kenteken{k} = Streepjes(nummerbord);
+            kenteken = Streepjes(nummerbord);
         else
-            kenteken{k} = 0;
+            kenteken = 0;
         end
         
     end
 else
-    kenteken(1) = 0;
+    kenteken{1} = 0;
 end
 end
