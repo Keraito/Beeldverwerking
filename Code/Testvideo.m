@@ -1,8 +1,9 @@
+
 %vid = VideoReader('Trainingsvideo.avi');
 p = 1;
 %73,74
 tic;
-for(k = 1801)%1:4:vid.NumberofFrames)
+for(k = 1:10:201)%1:4:vid.NumberofFrames)
 frame=read(vid,k);
 kenteken = run(frame);
 %if length(kenteken)>1
@@ -15,4 +16,5 @@ for(n = 1:length(kenteken))
         p = p + 1;
     end
 end
+
 end

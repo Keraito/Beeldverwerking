@@ -22,7 +22,7 @@ function varargout = LicensePlateExtractor(varargin)
 
 % Edit the above text to modify the response to help LicensePlateExtractor
 
-% Last Modified by GUIDE v2.5 20-Jan-2015 22:45:46
+% Last Modified by GUIDE v2.5 21-Jan-2015 12:25:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -128,26 +128,74 @@ tic;
 results = get(handles.uitable1,'Data');
 h = get(handles.previewWindow,'Children');
 i = handles.currentFrame;
+garbage = '******';
+temp = garbage;
+sampleList = cell(1,30);
+data = cell(30,3);
+sampleListIndex = 1;
 while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     frame = read(handles.video, i);
-    set(h,'CData', frame);
-    updateCurrentFrame(hObject, handles,i);
     kenteken = run(frame);
     if length(kenteken)>1
-        index = length(results)+1;
-        results{index,1} = kenteken;
-        results{index,2} = i;
-        time = toc;
-        results{index,3} = time; 
-        set(handles.uitable1,'Data',results);
+        characters = strrep(kenteken,'-','');
+        if sum(characters == temp) > 2 | temp == garbage
+            sampleList{sampleListIndex} = characters;
+            time = toc;
+            data(sampleListIndex,:) = {kenteken i time};
+            updateProcessingTime(hObject, handles);
+            
+            sampleListIndex = sampleListIndex + 1;
+            temp = characters;
+        else
+            [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
+            occurances = histc(X, 1:numel(uniqueSamples));
+            [~,I] = max(occurances);
+            I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+            if size(results,1) == 0
+                index = size(results,1)+1;
+                results{index,1} = data{I,1};
+                results{index,2} = data{I,2};
+                results{index,3} = data{I,3}; 
+                set(handles.uitable1,'Data',results); 
+            elseif ~ismember(data{I,1}, results(:,1))
+                index = size(results,1)+1;
+                results{index,1} = data{I,1};
+                results{index,2} = data{I,2};
+                results{index,3} = data{I,3}; 
+                set(handles.uitable1,'Data',results);
+            end
+            sampleListIndex = 1;
+            temp = garbage;
+        end
     end
-    updateProcessingTime(hObject, handles);
-    i = i + 1;
+    i = i + 4;
+    set(h,'CData', frame);
+    updateCurrentFrame(hObject, handles,i);
 end
+% Laatste kentekenplaat is nog niet opgenomen.
+if length(sampleList(1:sampleListIndex-1)) > 1
+    [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
+    occurances = histc(X, 1:numel(uniqueSamples));
+    [~,I] = max(occurances);
+    I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+    sampleListIndex = 1;
+    temp = garbage;
+            
+    index = size(results,1)+1;
+    results{index,1} = data{I,1};
+    results{index,2} = data{I,2};
+    results{index,3} = data{I,3};
+    set(handles.uitable1,'Data',results); 
+end
+
+solutionFile = 'beoordelingSolutions.mat';
+%solutionFile = 'trainingSolutions.mat';
+checkSolution(results, solutionFile);
+updateToggleButton(hObject, handles, ~get(handles.processToggle, 'Value'));
 % Hint: get(hObject,'Value') returns toggle state of processToggle
 
 function updateProcessingTime(hObject, handles)
-time = sprintf('%d%s',toc,'ms');
+time = sprintf('%0.2f%s',toc,'s');
 set(handles.timeLabel,'String',time);
 % Update handles structure
 guidata(hObject, handles);
@@ -160,6 +208,7 @@ function resetButton_Callback(hObject, eventdata, handles)
 updateToggleButton(hObject, handles, 0);
 updateCurrentFrame(hObject, handles, 1);
 image(read(handles.video,1));
+set(handles.uitable1,'Data',[]);
 % Update handles structure
 guidata(hObject, handles);
 % NOTE: DO NOT FORGET TO CLEAR THE TABLE WHEN FILLED!!!!

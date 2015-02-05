@@ -1,3 +1,4 @@
+
 function [ lplate ] = ExtractLicensePlate( frame )
 % Split in RGB channels.
 rgeheel = frame(:,:,1); ggeheel = frame(:,:,2); bgeheel = frame(:,:,3);

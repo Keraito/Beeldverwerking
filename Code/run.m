@@ -1,6 +1,7 @@
+
 function [ kenteken ] = run( frame )
 plate = ExtractLicensePlate(frame);
-%if length(plate{1})>1
+if length(plate{1})>1
     for(k = 1:length(plate))
         chars = segmentCharacters(plate{k});
         
