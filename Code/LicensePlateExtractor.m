@@ -136,38 +136,45 @@ sampleListIndex = 1;
 while get(handles.processToggle, 'Value') && i <= handles.video.NumberOfFrames
     frame = read(handles.video, i);
     kenteken = run(frame);
-    if length(kenteken)>1
-        characters = strrep(kenteken,'-','');
-        if sum(characters == temp) > 2 | temp == garbage
-            sampleList{sampleListIndex} = characters;
-            time = toc;
-            data(sampleListIndex,:) = {kenteken i time};
-            updateProcessingTime(hObject, handles);
-            
-            sampleListIndex = sampleListIndex + 1;
-            temp = characters;
-        else
-            [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
-            occurances = histc(X, 1:numel(uniqueSamples));
-            [~,I] = max(occurances);
-            I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
-            if size(results,1) == 0
-                index = size(results,1)+1;
-                results{index,1} = data{I,1};
-                results{index,2} = data{I,2};
-                results{index,3} = data{I,3}; 
-                set(handles.uitable1,'Data',results); 
-            elseif ~ismember(data{I,1}, results(:,1))
-                index = size(results,1)+1;
-                results{index,1} = data{I,1};
-                results{index,2} = data{I,2};
-                results{index,3} = data{I,3}; 
-                set(handles.uitable1,'Data',results);
+    
+    for(m = 1:length(kenteken))
+        kentekennu = kenteken{m};
+        
+        if length(kentekennu)>1
+            characters = strrep(kentekennu,'-','');
+            if sum(characters == temp) > 2 | temp == garbage
+                sampleList{sampleListIndex} = characters;
+                time = toc;
+                data(sampleListIndex,:) = {kentekennu i time};
+                updateProcessingTime(hObject, handles);
+
+                sampleListIndex = sampleListIndex + 1;
+                temp = characters;
+            else
+                [uniqueSamples, ~, X]=unique(sampleList(1:sampleListIndex-1));
+                occurances = histc(X, 1:numel(uniqueSamples));
+                [~,I] = max(occurances);
+                I = find(ismember(sampleList(1:sampleListIndex-1), uniqueSamples{I}), 1);
+                if size(results,1) == 0
+                    index = size(results,1)+1;
+                    results{index,1} = data{I,1};
+                    results{index,2} = data{I,2};
+                    results{index,3} = data{I,3}; 
+                    set(handles.uitable1,'Data',results); 
+                elseif ~ismember(data{I,1}, results(:,1))
+                    index = size(results,1)+1;
+                    results{index,1} = data{I,1};
+                    results{index,2} = data{I,2};
+                    results{index,3} = data{I,3}; 
+                    set(handles.uitable1,'Data',results);
+                end
+                sampleListIndex = 1;
+                temp = garbage;
             end
-            sampleListIndex = 1;
-            temp = garbage;
         end
+
     end
+    
     i = i + 4;
     set(h,'CData', frame);
     updateCurrentFrame(hObject, handles,i);
